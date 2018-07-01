@@ -1,40 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Board from './board.js';
 import './index.css';
-import Square from './square.js';
 
-  
-  class Board extends React.Component {
-
-    renderSquare(i) {
-      return (
-        <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />
-      );;
-    }
-  
-    render() {
-        return (
-        <div>
-            <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-            </div>
-            <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-            </div>
-            <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
-            </div>
-        </div>
-        );
-    }
-  }
-  
   class Game extends React.Component {
     constructor(props) {
         super(props);
@@ -46,12 +14,13 @@ import Square from './square.js';
             stepNumber: 0
         };
     }
+     
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
 
-        if (calculateWinner(squares) || squares[i]) {
+        if (Game.calculateWinner(squares) || squares[i]) {
             return;
         }
 
@@ -75,7 +44,7 @@ import Square from './square.js';
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
+        const winner = Game.calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
             const desc = move ? `Go to move # ${move}` : 'Go to game start';
@@ -104,7 +73,27 @@ import Square from './square.js';
             </div>
         </div>
         );
-}
+    }
+    
+    static calculateWinner(squares) {
+        const lines = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+        for (let i = 0; i < lines.length; i++) {
+          const [a, b, c] = lines[i];
+          if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+            return squares[a];
+          }
+        }
+        return null;
+    }
   }
   
   // ========================================
@@ -114,23 +103,3 @@ import Square from './square.js';
     document.getElementById('root')
   );
   
-
-  function calculateWinner(squares) {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
-      }
-    }
-    return null;
-  }
