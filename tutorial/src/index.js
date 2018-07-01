@@ -45,7 +45,7 @@ import './index.css';
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = Game.calculateWinner(current.squares);
-
+        const status = Game.getStatus(winner, this.state.xIsNext);
         const moves = history.map((step, move) => {
             const desc = move ? `Go to move # ${move}` : 'Go to game start';
             return (
@@ -55,26 +55,27 @@ import './index.css';
             );
         });
 
-        let status;
-        if (winner) {
-            status = `Winner: ${winner}`;
-        } else {
-            status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
-        }
-
         return (
-        <div className="game">
-            <div className="game-board">
-                <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+            <div className="game">
+                <div className="game-board">
+                    <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+                </div>
+                <div className="game-info">
+                    <div>{status}</div>
+                    <ol>{moves}</ol>
+                </div>
             </div>
-            <div className="game-info">
-                <div>{status}</div>
-                <ol>{moves}</ol>
-            </div>
-        </div>
         );
     }
-    
+
+    static getStatus(winner, xIsNext) {
+        if (winner) {
+            return `Winner: ${winner}`;
+        }
+
+        return `Next player: ${xIsNext ? 'X' : 'O'}`;
+    }
+
     static calculateWinner(squares) {
         const lines = [
             [0, 1, 2],
@@ -86,20 +87,19 @@ import './index.css';
             [0, 4, 8],
             [2, 4, 6],
         ];
+
         for (let i = 0; i < lines.length; i++) {
-          const [a, b, c] = lines[i];
-          if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
-          }
+            const [a, b, c] = lines[i];
+            if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+                return squares[a];
+            }
         }
+        
         return null;
     }
   }
   
   // ========================================
   
-  ReactDOM.render(
-    <Game />,
-    document.getElementById('root')
-  );
+  ReactDOM.render(<Game />, document.getElementById('root'));
   
