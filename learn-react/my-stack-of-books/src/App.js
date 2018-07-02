@@ -57,18 +57,9 @@ class App extends Component {
         </div>
         <div className='row mt-4'>
           <div className='col'>
-            <table className='table'>
-              <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th className="text-right">ISBN</th>
-                  </tr>
-              </thead>
-              <tbody>
+            <ul className='list-group list-group-flush border-top border-bottom'>
                 {books}      
-              </tbody>
-            </table>
+            </ul>
           </div>
         </div>
       </div>      

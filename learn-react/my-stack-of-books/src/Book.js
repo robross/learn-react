@@ -29,8 +29,7 @@ class Book extends Component {
       const updateBook = e => this.handleSubmit(e);
 
       return (
-        <tr key={isbn}>
-          <td colSpan="3">
+        <li className="list-group-item" key={isbn}>
           <form onSubmit={updateBook}>
             <div className="row">
               <div className="col">
@@ -48,19 +47,19 @@ class Book extends Component {
               </div>
             </div>
           </form>
-          </td>
-        </tr>
+        </li>
       );
     } 
     else {
       const onEditModeEnter = () => this.props.onEditModeEnter({isbn});
 
       return (
-        <tr key={isbn} onClick={onEditModeEnter}>
-          <td>{title}</td>
-          <td>{author}</td>
-          <td className="text-right">{isbn}</td>
-        </tr>
+        <li className="list-group-item" key={isbn}>
+          <span className="float-right text-muted pl-4" onClick={onEditModeEnter}>
+            <i class="fal fa-ellipsis-h-alt"></i>
+          </span>
+          <strong>{title}</strong> <small className="text-muted">{author} (ISBN:{isbn})</small>
+        </li>
       );
     }
   }
