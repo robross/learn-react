@@ -9,7 +9,8 @@ class App extends Component {
       books: [
         { title: 'Code Complete', author: 'McConnell', isbn: '12345' },
         { title: 'Refactoring', author: 'Fowler', isbn: '9875' },
-      ]
+      ],
+      bookInEditMode: null
     };
   }
 
@@ -24,8 +25,28 @@ class App extends Component {
     this.setState({ books: books });
   }
 
+  onBookEditModeEnter({isbn}) {
+    this.setState({bookInEditMode: isbn});
+  }
+
+  onBookEditModeExit({isbn}) {
+    const bookInEditMode = this.state.bookInEditMode;
+    if (bookInEditMode !== isbn) {
+      return;
+    }
+
+    this.setState({bookInEditMode: null});
+  }
+
   render() {
-    const books = this.state.books.map(book => <Book book={book} key={book.isbn} onBookEdited={this.onBookEdited.bind(this)} />);  
+    const books = this.state.books.map(book => 
+      <Book book={book} 
+        key={book.isbn} 
+        onBookEdited={this.onBookEdited.bind(this)} 
+        onEditModeEnter={this.onBookEditModeEnter.bind(this)} 
+        onEditModeExit={this.onBookEditModeExit.bind(this)}
+        isEditing = {this.state.bookInEditMode === book.isbn}
+        />);  
 
     return (
       <div className='container'>
