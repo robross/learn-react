@@ -1,0 +1,71 @@
+.action-container {
+    overflow: hidden;
+}
+
+.action {
+    position: absolute;
+    width: 80px;
+    right: -80px;
+    top: 0;
+    height: 100%;
+    text-align: center;
+    border-left: 1px solid #fff;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+.action-secondary {
+    position: absolute;
+    margin-top: -100%;
+    width: 240px;
+    transition: all 0.2s ease;
+    transition-delay: .2s;
+}
+
+.action i {
+    line-height: 1.5;
+}
+
+.action-show .action-1 {
+    right: 0;
+}
+
+.action-show .action-2 {
+    right: 80px;
+}
+
+.action-show .action-3 {
+    right: 160px;
+}
+
+.action-expand-2 .action-2 {
+    right: 0;
+    width: 240px;
+}
+
+.action-expand-2 .action-3 {
+    right: -80px;
+}
+
+.action-expand-2 .action-1 {
+    right: -80px;
+}
+
+.action-expand-2 .action-2 .action-secondary {
+    margin-top: 5px;
+}
+
+.action-secondary button {
+    display: inline-block;
+    width: 40% !important;
+    margin: 0 7px;
+}
+
+.action-2  i {
+    transition: all 0.3s ease;
+    transition-delay: .2s;
+}
+
+.action-expand-2 .action-2  i {
+    margin-top: 100%;
+}

@@ -25,16 +25,11 @@ class App extends Component {
     this.setState({ books: books });
   }
 
-  onBookEditModeEnter({isbn}) {
+  onBookEditModeEnter(isbn) {
     this.setState({bookInEditMode: isbn});
   }
 
-  onBookEditModeExit({isbn}) {
-    const bookInEditMode = this.state.bookInEditMode;
-    if (bookInEditMode !== isbn) {
-      return;
-    }
-
+  onBookEditModeExit() {
     this.setState({bookInEditMode: null});
   }
 
@@ -46,6 +41,7 @@ class App extends Component {
         onEditModeEnter={this.onBookEditModeEnter.bind(this)} 
         onEditModeExit={this.onBookEditModeExit.bind(this)}
         isEditing = {this.state.bookInEditMode === book.isbn}
+        isAnyoneEditing = {this.state.bookInEditMode}
         />);  
 
     return (
