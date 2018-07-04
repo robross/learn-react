@@ -55,6 +55,8 @@
     line-height: 49px;
     margin-left: 80px;
     padding-left: 15px;
+    opacity: 0;
+    transition: opacity 0.75s;
 }
 
 .action-content .btn {
@@ -93,4 +95,9 @@
 
 .action-container-expand-2 .action-3 {
     transform: translate3d(calc(-100% - 80px), 0, 0);
+}
+
+.action-container-expand-3 .action-3 .action-content,
+.action-container-expand-2 .action-2 .action-content {
+    opacity: 1.0;
 }
