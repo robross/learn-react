@@ -39,7 +39,12 @@ class Book extends Component {
 
   handleEndEditing = (event) => {
     event.stopPropagation();
-    this.props.onEndEditing();
+
+    if (this.props.book.isNew) {
+      this.props.onRemove(this.props.book.isbn);
+    } else {
+      this.props.onEndEditing();
+    }
   }
 
   handleUpdateBook = (event) => {
@@ -63,7 +68,7 @@ class Book extends Component {
       this.setState({ showRemoveConfirm: false, showEditForm: false });
     }
 
-    const { title, author, isbn } = this.props.book;
+    const { title, author, isbn, isNew } = this.props.book;
     const onShowRemoveConfirm = (e) => this.onConfirmRemove(e);
     const onShowForm = (e) => this.onShowForm(e);
     const handleItemClick = (e) => this.handleListItemClick(e);
@@ -75,12 +80,13 @@ class Book extends Component {
     let modeClassName = '';
     if (this.state.showRemoveConfirm) {
       modeClassName = 'action-container-open action-container-expand-2';
-    } else if (this.state.showEditForm) {
+    } else if (this.state.showEditForm || isNew) {
       modeClassName = 'action-container-open action-container-expand-3';
     } else if (this.props.isEditing) {
       modeClassName = 'action-container-open';
     }
     const liClassName = `list-group-item action-container ${modeClassName}`;
+    const saveButtonText = isNew ? 'Add' : 'Update';
 
     return (
       <li className={liClassName} key={isbn} onClick={handleItemClick}>
@@ -100,9 +106,9 @@ class Book extends Component {
             <form onSubmit={handleUpdateBook}>
               <input type="text" placeholder="Title" defaultValue={title} ref={this.titleInput} />
               <input type="text" placeholder="Author" defaultValue={author} ref={this.authorInput} />
-              <input type="text" placeholder="ISBN" defaultValue={isbn} ref={this.isbnInput} />
-              <button className="btn btn-sm btn-outline-success" type="submit">Update</button>
-              <button className="btn btn-sm btn-outline-secondary" onClick={handleEndEditing}>Cancel</button>
+              <input type="text" placeholder="ISBN" required defaultValue={isbn} ref={this.isbnInput} />
+              <button className="btn btn-sm btn-outline-success" type="submit">{saveButtonText}</button>
+              <button className="btn btn-sm btn-outline-secondary" type="button" onClick={handleEndEditing}>Cancel</button>
             </form>
           </div>
         </div>

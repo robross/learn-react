@@ -34,6 +34,7 @@ class App extends Component {
     bookToUpdate.title = title;
     bookToUpdate.author = author;
     bookToUpdate.isbn = isbn;
+    bookToUpdate.isNew = false;
 
     this.setState({ books: books, bookInEditMode: null });
   }
@@ -45,7 +46,15 @@ class App extends Component {
     this.setState({ books: newBooks });
   }
 
+  onBookAdd() {
+    let books = this.state.books.slice();
+    books.unshift({ isbn: '', isNew: true });
+
+    this.setState({ books: books, bookInEditMode: '' });
+  }
+
   render() {
+    const onBookAdd = () => this.onBookAdd();
     const books = this.state.books.map(book =>
       <Book book={book}
         key={book.isbn}
@@ -58,12 +67,26 @@ class App extends Component {
         onRemove={this.onBookRemove.bind(this)}
       />);
 
+    const hasNewBooks = this.state.books.filter((b) => b.isNew).length > 0;
+    const addButtonClassName = hasNewBooks ? 'btn btn-lg btn-link disabled' : 'btn btn-lg btn-link';
+
     return (
-      <div className='container'>
-        <h1 className='display-3'>My Stack of Books</h1>
-        <ul className='list-group list-group-flush border-top border-bottom'>
-          {books}
-        </ul>
+      <div className="container">
+        <div className="row">
+          <div className="col-9 pl-4">
+            <h1 className="display-4">My Stack of Books</h1>
+          </div>
+          <div className="col-3 pt-3 text-right">
+            <button className={addButtonClassName} onClick={onBookAdd}>Add Book</button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <ul className="list-group list-group-flush border-top border-bottom">
+              {books}
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
