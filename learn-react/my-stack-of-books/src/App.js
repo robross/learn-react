@@ -14,7 +14,20 @@ class App extends Component {
     };
   }
 
-  onBookEdited({key, title, author, isbn}){
+  onBookSelect(isbn) {
+    const selectedTitle = this.state.books.filter((b) => b.isbn === isbn)[0].title;
+    alert(`You selected ${selectedTitle}`);
+  }
+
+  onBookStartEditing(isbn) {
+    this.setState({ bookInEditMode: isbn });
+  }
+
+  onBookEndEditing() {
+    this.setState({ bookInEditMode: null });
+  }
+
+  onBookUpdate({ key, title, author, isbn }) {
     const books = this.state.books.slice();
     const bookToUpdate = books.filter((b) => b.isbn === key)[0]
 
@@ -22,43 +35,36 @@ class App extends Component {
     bookToUpdate.author = author;
     bookToUpdate.isbn = isbn;
 
-    this.setState({ books: books });
+    this.setState({ books: books, bookInEditMode: null });
   }
 
-  onBookEditModeEnter(isbn) {
-    this.setState({bookInEditMode: isbn});
-  }
+  onBookRemove(isbn) {
+    const books = this.state.books.slice();
+    const newBooks = books.filter((b) => b.isbn !== isbn)
 
-  onBookEditModeExit() {
-    this.setState({bookInEditMode: null});
+    this.setState({ books: newBooks });
   }
 
   render() {
-    const books = this.state.books.map(book => 
-      <Book book={book} 
-        key={book.isbn} 
-        onBookEdited={this.onBookEdited.bind(this)} 
-        onEditModeEnter={this.onBookEditModeEnter.bind(this)} 
-        onEditModeExit={this.onBookEditModeExit.bind(this)}
-        isEditing = {this.state.bookInEditMode === book.isbn}
-        isAnyoneEditing = {this.state.bookInEditMode}
-        />);  
+    const books = this.state.books.map(book =>
+      <Book book={book}
+        key={book.isbn}
+        isAnyoneEditing={this.state.bookInEditMode}
+        isEditing={this.state.bookInEditMode === book.isbn}
+        onSelect={this.onBookSelect.bind(this)}
+        onStartEditing={this.onBookStartEditing.bind(this)}
+        onEndEditing={this.onBookEndEditing.bind(this)}
+        onUpdate={this.onBookUpdate.bind(this)}
+        onRemove={this.onBookRemove.bind(this)}
+      />);
 
     return (
       <div className='container'>
-        <div className='row'>
-          <div className='col'>
-            <h1 className='display-3'>My Stack of Books</h1>
-          </div>
-        </div>
-        <div className='row mt-4'>
-          <div className='col'>
-            <ul className='list-group list-group-flush border-top border-bottom'>
-                {books}      
-            </ul>
-          </div>
-        </div>
-      </div>      
+        <h1 className='display-3'>My Stack of Books</h1>
+        <ul className='list-group list-group-flush border-top border-bottom'>
+          {books}
+        </ul>
+      </div>
     );
   }
 }

@@ -2,106 +2,127 @@ import React, { Component } from 'react';
 import './Book.css';
 
 class Book extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-  
-    this.state = {
-      showDeleteMode: false,
-      showFormMode: false
-    };
+
+    this.state = { showRemoveConfirm: false, showEditForm: false };
 
     this.titleInput = React.createRef();
     this.authorInput = React.createRef();
     this.isbnInput = React.createRef();
   }
 
-  handleItemClick = (event) => {
-    if (this.props.isAnyoneEditing){
-      this.props.onEditModeExit();
+  onConfirmRemove = (event) => {
+    event.stopPropagation();
+    this.setState({ showRemoveConfirm: true, showEditForm: false });
+  }
+
+  onShowForm = (event) => {
+    event.stopPropagation();
+    this.setState({ showRemoveConfirm: false, showEditForm: true });
+  }
+
+  handleListItemClick = (event) => {
+    event.stopPropagation();
+
+    if (this.props.isAnyoneEditing) {
+      this.props.onEndEditing();
     } else {
-      alert('you clicked me');
+      this.props.onSelect(this.props.book.isbn);
     }
   }
 
-  handleEditModeEnter = (event) => {
+  handleStartEditing = (event) => {
     event.stopPropagation();
-    this.props.onEditModeEnter(this.props.book.isbn);
+    this.props.onStartEditing(this.props.book.isbn);
   }
 
-  handleEditModeExit = (event) => {
+  handleEndEditing = (event) => {
     event.stopPropagation();
-    this.props.onEditModeExit();
-    this.setState({
-      showDeleteMode: false,
-      onShowFormMode: false
-    });
+    this.props.onEndEditing();
   }
 
   handleUpdateBook = (event) => {
+    event.preventDefault();
+
     const key = this.props.book.isbn;
     const title = this.titleInput.current.value;
     const author = this.authorInput.current.value;
     const isbn = this.isbnInput.current.value;
 
-    this.props.onBookEdited({ key, title, author, isbn });
-    this.setState({ isEditing: false });
+    this.props.onUpdate({ key, title, author, isbn });
   }
 
-  onShowDeleteMode = (event) => {
-    event.stopPropagation();
-    this.setState({ 
-      showDeleteMode: true,
-      showFormMode: false
-    });
-  }
-
-  onShowFormMode = (event) => {
-    event.stopPropagation();
-    this.setState({ 
-      showDeleteMode: false,
-      showFormMode: true
-    });
+  handleRemoveBook = (event) => {
+    event.preventDefault();
+    this.props.onRemove(this.props.book.isbn);
   }
 
   render() {
-    if (!this.props.isEditing && (this.state.showDeleteMode || this.state.showFormMode)){
-      this.setState({ 
-        showDeleteMode: false,
-        showFormMode: false
-      });
+    if (!this.props.isEditing && (this.state.showRemoveConfirm || this.state.showEditForm)) {
+      this.setState({ showRemoveConfirm: false, showEditForm: false });
     }
 
     const { title, author, isbn } = this.props.book;
-    const handleItemClick = (e) => this.handleItemClick(e);
-    const handleEditModeEnter = (e) => this.handleEditModeEnter(e);
-    const handleEditModeExit = (e) => this.handleEditModeExit(e);
-    const onShowDeleteMode = (e) => this.onShowDeleteMode(e);
+    const onShowRemoveConfirm = (e) => this.onConfirmRemove(e);
+    const onShowForm = (e) => this.onShowForm(e);
+    const handleItemClick = (e) => this.handleListItemClick(e);
+    const handleStartEditing = (e) => this.handleStartEditing(e);
+    const handleEndEditing = (e) => this.handleEndEditing(e);
     const handleUpdateBook = e => this.handleUpdateBook(e);
+    const handleRemoveBook = (e) => this.handleRemoveBook(e);
 
     let modeClassName = '';
-    if (this.state.showDeleteMode) {
-      modeClassName = 'action-show action-expand-2';
+    if (this.state.showRemoveConfirm) {
+      modeClassName = 'action-container-open action-container-expand-2';
+    } else if (this.state.showEditForm) {
+      modeClassName = 'action-container-open action-container-expand-3';
     } else if (this.props.isEditing) {
-      modeClassName = 'action-show';
+      modeClassName = 'action-container-open';
     }
-    
     const liClassName = `list-group-item action-container ${modeClassName}`;
 
     return (
       <li className={liClassName} key={isbn} onClick={handleItemClick}>
-        <span className="float-right text-muted pl-4" onClick={handleEditModeEnter}>
+        <span className="action-trigger" onClick={handleStartEditing}>
           <i className="fal fa-ellipsis-h-alt"></i>
         </span>
-        <strong>{title}</strong> <small className="text-muted">{author} (ISBN:{isbn})</small>
-        <div className="action action-3 bg-info"><i className="fal fa-2x fa-pencil"></i></div>
-        <div className="action action-2 bg-danger" onClick={onShowDeleteMode}>
-          <div className="action-secondary">
-              <button type="button" className="btn btn-light text-danger">Delete</button>
-              <button type="button" className="btn btn-light" onClick={handleEditModeExit}>Cancel</button>
-          </div>
-          <i className="fal fa-2x fa-trash"></i>
+
+        <div className="action-container-content">
+          <strong>{title}</strong> <small className="text-muted">{author} (ISBN:{isbn})</small>
         </div>
-        <div className="action action-1 bg-secondary" onClick={handleEditModeExit}><i className="fal fa-2x fa-times"></i></div>
+
+        <div className="action action-3" onClick={onShowForm}>
+          <div className="action-icon bg-info text-light">
+            <i className="fal fa-2x fa-pencil"></i>
+          </div>
+          <div className="action-content">
+            <form onSubmit={handleUpdateBook}>
+              <input type="text" placeholder="Title" defaultValue={title} ref={this.titleInput} />
+              <input type="text" placeholder="Author" defaultValue={author} ref={this.authorInput} />
+              <input type="text" placeholder="ISBN" defaultValue={isbn} ref={this.isbnInput} />
+              <button className="btn btn-sm btn-outline-success" type="submit">Update</button>
+              <button className="btn btn-sm btn-outline-secondary" onClick={handleEndEditing}>Cancel</button>
+            </form>
+          </div>
+        </div>
+
+        <div className="action action-2" onClick={onShowRemoveConfirm}>
+          <div className="action-icon bg-danger text-light">
+            <i className="fal fa-2x fa-trash"></i>
+          </div>
+          <div className="action-content">
+            Remove <strong>{title}</strong>?
+            <button className="btn btn-sm btn-outline-danger" onClick={handleRemoveBook}>Yes</button>
+            <button className="btn btn-sm btn-outline-secondary" onClick={handleEndEditing}>No</button>
+          </div>
+        </div>
+
+        <div className="action action-1" onClick={handleEndEditing}>
+          <div className="action-icon bg-secondary text-light">
+            <i className="fal fa-2x fa-times"></i>
+          </div>
+        </div>
       </li>
     );
   }
